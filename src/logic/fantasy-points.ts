@@ -31,7 +31,7 @@ const FANTASY_POINTS_URL = "https://api.codetabs.com/v1/proxy/?quest=https://fan
 
 
 export async function fetchLatestPoints(): Promise<FantasyPointObject[]> {
-    const start = parseInt(localStorage.getItem("tourgamedayId") ?? "1");
+    const start = parseInt(localStorage.getItem("tourgamedayId") ?? "38");
     const points = await fetchPoints(start, []);
     return points;
 }
