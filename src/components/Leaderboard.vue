@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading">
+    <div v-if="isLoading" class="text-center my-16">
         <v-progress-circular indeterminate />
     </div>
     <div v-else>
