@@ -1,21 +1,24 @@
 <template>
-    <v-table class="mx-1">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Points</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="tp in teamPoints">
-                <td> {{ teamPoints.indexOf(tp) + 1 }} </td>
-                <td> <a :href="`#${tp.name.toLowerCase()}`">{{ tp.name }}</a></td>
-                <td> {{ tp.points }}</td>
-            </tr>
-        </tbody>
+    <v-container>
+        <v-table class="mx-1">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="tp in teamPoints">
+                    <td> {{ teamPoints.indexOf(tp) + 1 }} </td>
+                    <td> <a :href="`#${tp.name.toLowerCase()}`">{{ tp.name }}</a></td>
+                    <td> {{ tp.points }}</td>
+                </tr>
+            </tbody>
 
-    </v-table>
+        </v-table>
+    </v-container>
+
 </template>
 
 <script setup lang="ts">

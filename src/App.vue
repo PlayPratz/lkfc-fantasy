@@ -12,6 +12,9 @@
         }" />
       </div>
     </v-main>
+    <v-fab app color="primary" location="bottom right" icon="mdi-arrow-up" @click="scrollToTop">
+      <v-icon></v-icon>
+    </v-fab>
   </v-app>
 </template>
 
@@ -23,6 +26,8 @@ import Leaderboard from './components/Leaderboard.vue';
 import TeamBreakdown from './components/TeamBreakdown.vue';
 
 const isLoading = ref(true);
+
+
 
 const teamPoints: TeamWithPoints[] = [];
 let fantasyPlayers: FantasyPlayers;
@@ -38,7 +43,12 @@ fetchLatestPoints()
 
       fantasyPlayers = fp;
     }
+
+    teamPoints.sort((t1, t2) => t2.points - t1.points)
     isLoading.value = false;
   });
 
+function scrollToTop() {
+  scrollTo({ top: 0 });
+}
 </script>

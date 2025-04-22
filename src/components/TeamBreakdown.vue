@@ -1,31 +1,36 @@
 <template>
-    <div class="my-10 mx-1" :id="teamPoint.name.toLowerCase()">
-        <h3 class="text-center">{{ teamPoint.name }}</h3>
-        <v-table class="my-4">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Player</th>
-                    <th>Points</th>
-                    <th>Team</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="p in players">
-                    <td>{{ p.index ? p.index : '🩹'}}</td>
-                    <td>{{ p.player.Name }} {{ getOverseasIndicator(p.player) }}</td>
-                    <td>{{ p.player.OverallPoints }} {{ getPointIndicator(p.player) }}</td>
-                    <td>{{ p.player.TeamShortName }}</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><b>TOTAL</b></td>
-                    <td><b>{{ teamPoint.points }}</b></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </v-table>
-    </div>
+    <v-container>
+        <div class="py-3 mx-1" :id="teamPoint.name.toLowerCase()">
+            <h4 class="text-center">{{ teamPoint.name }}</h4>
+            <v-table class="my-4">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">#</th>
+                        <th>Player</th>
+                        <th style="width: 10%;">Points</th>
+                        <th style="width: 10%;">Price (₹cr)</th>
+                        <th style="width: 10%;">Team</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="p in players">
+                        <td>{{ p.index ? p.index : '🔄' }}</td>
+                        <td>{{ p.player.Name }} {{ getOverseasIndicator(p.player) }}</td>
+                        <td>{{ p.player.OverallPoints }} {{ getPointIndicator(p.player) }}</td>
+                        <td> {{ p.price ? p.price : '🩹' }} {{ getPriceIndicator(p.price) }}</td>
+                        <td>{{ p.player.TeamShortName }}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><b>TOTAL</b></td>
+                        <td><b>{{ teamPoint.points }}</b></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </v-table>
+        </div>
+    </v-container>
+
 </template>
 
 <script setup lang="ts">
@@ -48,26 +53,32 @@ const teamPoint = p.props.teamPoint;
 
 const players: {
     index: number,
+    price: number,
     player: FantasyPlayerObject,
 }[] = [];
 
-for (let i = 0; i < teamPoint.players.length; i++) {
-    let pid = teamPoint.players[i];
+// const playerIds = getPlayerIdsForTeam(teamPoint);
+
+for (let i = 0; i < teamPoint.auction.length; i++) {
+    const auction = teamPoint.auction[i];
+    let pid = auction.playerId;
     const p = fantasyPlayers[pid];
-    players.push({ index: i + 1, player: p });
+    players.push({ index: i + 1, player: p, price: auction.price });
 
     while (Replacements[pid]) {
         players.push({
             index: 0,
-            player: fantasyPlayers[Replacements[pid]]
+            player: fantasyPlayers[Replacements[pid]],
+            price: 0
         });
         pid = Replacements[pid];
     }
 }
 
-const descPoints = teamPoint.players
-    .map((p) => fantasyPlayers[p].OverallPoints)
-    .sort((a, b) => b - a)
+const descPoints =
+    teamPoint.auction
+        .map((a) => fantasyPlayers[a.playerId].OverallPoints)
+        .sort((a, b) => b - a)
 
 const threshold = descPoints[11];
 const highest = descPoints[0];
@@ -86,6 +97,13 @@ function getOverseasIndicator(p: FantasyPlayerObject): string {
     if (p.IS_FP === '1') {
         return '✈️';
     }
+    return '';
+}
+
+const expensive = teamPoint.auction.map((a) => a.price).reduce((p, c) => p > c ? p : c);
+
+function getPriceIndicator(price: number): string {
+    if (price === expensive) return '💰';
     return '';
 }
 
