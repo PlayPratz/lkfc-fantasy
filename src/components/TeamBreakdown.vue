@@ -12,7 +12,7 @@
             </thead>
             <tbody>
                 <tr v-for="p in players">
-                    <td>{{ p.rank ? p.rank : '+'}}</td>
+                    <td>{{ p.index ? p.index : '🩹'}}</td>
                     <td>{{ p.player.Name }} {{ getOverseasIndicator(p.player) }}</td>
                     <td>{{ p.player.OverallPoints }} {{ getPointIndicator(p.player) }}</td>
                     <td>{{ p.player.TeamShortName }}</td>
@@ -47,18 +47,18 @@ const fantasyPlayers = p.props.fantasyPlayers;
 const teamPoint = p.props.teamPoint;
 
 const players: {
-    rank: number,
+    index: number,
     player: FantasyPlayerObject,
 }[] = [];
 
 for (let i = 0; i < teamPoint.players.length; i++) {
     let pid = teamPoint.players[i];
     const p = fantasyPlayers[pid];
-    players.push({ rank: i + 1, player: p });
+    players.push({ index: i + 1, player: p });
 
     while (Replacements[pid]) {
         players.push({
-            rank: 0,
+            index: 0,
             player: fantasyPlayers[Replacements[pid]]
         });
         pid = Replacements[pid];
