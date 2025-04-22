@@ -1,5 +1,11 @@
 <template>
   <v-app>
+    <v-app-bar flat density="compact">
+      <v-app-bar-title>Leaderboard</v-app-bar-title>
+      <v-btn @click="toggleTheme">
+        <v-icon>mdi-theme-light-dark</v-icon>
+      </v-btn>
+    </v-app-bar>
     <v-main>
       <div v-if="isLoading" class="text-center my-16">
         <v-progress-circular indeterminate />
@@ -15,8 +21,19 @@
         }" />
       </div>
     </v-main>
-    <v-fab v-if="!isLoading" app color="primary" location="bottom right" icon="mdi-arrow-up" @click="scrollToTop">
-    </v-fab>
+    <v-fab v-if="!isLoading" app color="primary" location="bottom right" icon="mdi-arrow-up" @click="scrollToTop"
+      :active="!isScrolledTop" />
+    <!-- <v-bottom-navigation mode="shift" value="leaderboard" mandatory="force" @update:model-value="(v) => console.log(v)">
+      <v-btn value="leaderboard">
+        <v-icon>mdi-format-list-numbered</v-icon>
+        <span>Leaderboard</span>
+      </v-btn>
+
+      <v-btn value="stats">
+        <v-icon>mdi-chart-bar</v-icon>
+        <span>Stats</span>
+      </v-btn>
+    </v-bottom-navigation> -->
   </v-app>
 </template>
 
@@ -26,6 +43,12 @@ import { fetchLatestPoints, type FantasyPlayers } from './logic/fantasy-player';
 import { calculatePointsForTeam, TEAMS, type TeamWithPoints } from './logic/teams';
 import Leaderboard from './components/Leaderboard.vue';
 import TeamBreakdown from './components/TeamBreakdown.vue';
+import { useTheme } from 'vuetify';
+
+const theme = useTheme();
+function toggleTheme() {
+  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark';
+}
 
 const isLoading = ref(true);
 
@@ -48,7 +71,12 @@ fetchLatestPoints()
     isLoading.value = false;
   });
 
+const isScrolledTop = ref(true);
+addEventListener("scroll", () => {
+  isScrolledTop.value = scrollY === 0;
+});
 function scrollToTop() {
   scrollTo({ top: 0 });
 }
+
 </script>

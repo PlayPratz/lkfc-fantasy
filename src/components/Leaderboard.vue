@@ -1,8 +1,9 @@
 <template>
     <v-container>
-        <v-table class="mx-1">
+        <!-- <h3 class="text-center">LEADERBOARD</h3> -->
+        <v-table class="mx-1 mt-4">
             <thead>
-                <tr>
+                <tr class="bg-secondary">
                     <th>#</th>
                     <th>Name</th>
                     <th>Points</th>
@@ -11,11 +12,16 @@
             <tbody>
                 <tr v-for="tp in teamPoints">
                     <td> {{ teamPoints.indexOf(tp) + 1 }} </td>
-                    <td> <a :href="`#${tp.name.toLowerCase()}`">{{ tp.name }}</a></td>
+                    <td>
+                        <a class="text-primary text-decoration-none" :href="`#${tp.name.toLowerCase()}`">
+                            {{ tp.name }}
+                            <v-icon class="text-secondary">mdi-arrow-right-thin</v-icon>
+                        </a>
+
+                    </td>
                     <td> {{ tp.points }}</td>
                 </tr>
             </tbody>
-
         </v-table>
     </v-container>
 
