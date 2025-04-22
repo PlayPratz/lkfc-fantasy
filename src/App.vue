@@ -3,6 +3,9 @@
     <v-main>
       <div v-if="isLoading" class="text-center my-16">
         <v-progress-circular indeterminate />
+        <br />
+        <br />
+        <span>Fetching Fantasy Points...</span>
       </div>
       <div v-else>
         <Leaderboard :teampoints="teamPoints" />
@@ -12,8 +15,7 @@
         }" />
       </div>
     </v-main>
-    <v-fab app color="primary" location="bottom right" icon="mdi-arrow-up" @click="scrollToTop">
-      <v-icon></v-icon>
+    <v-fab v-if="!isLoading" app color="primary" location="bottom right" icon="mdi-arrow-up" @click="scrollToTop">
     </v-fab>
   </v-app>
 </template>
