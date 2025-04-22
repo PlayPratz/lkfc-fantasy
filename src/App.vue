@@ -27,8 +27,6 @@ import TeamBreakdown from './components/TeamBreakdown.vue';
 
 const isLoading = ref(true);
 
-
-
 const teamPoints: TeamWithPoints[] = [];
 let fantasyPlayers: FantasyPlayers;
 

@@ -31,7 +31,7 @@ const FANTASY_POINTS_URL = "https://api.codetabs.com/v1/proxy/?quest=https://fan
 
 
 export async function fetchLatestPoints(): Promise<FantasyPlayers> {
-    const start = parseInt(localStorage.getItem("tourgamedayId") ?? "38");
+    const start = parseInt(localStorage.getItem("tourgamedayId") ?? "40");
     const points = await fetchPoints(start, []);
 
     const players: FantasyPlayers = {};
@@ -52,9 +52,12 @@ async function fetchPoints(tourgamedayId: number, previous: FantasyPlayerObject[
     }
 }
 
-async function fetchPointsInner(tourgamedayId: number): Promise<FantasyPlayerObject[]> {
+async function fetchPointsInner(tourgamedayId: number): Promise<FantasyPlayerObject[] | null> {
     const res = await fetch(FANTASY_POINTS_URL + tourgamedayId);
     const json = await res.json();
+
+    if (!json.Data) return null;
+
     const points: FantasyPlayerObject[] = json.Data.Value.Players;
     return points;
 }
