@@ -1,4 +1,4 @@
-export interface FantasyPointObject {
+export interface FantasyPlayerObject {
     CapSelectedPer: number
     GamedayPoints: number
     IS_FP: string
@@ -25,18 +25,24 @@ export interface FantasyPointObject {
     isUnCap: number
 }
 
-
+export type FantasyPlayers = Record<number, FantasyPlayerObject>;
 
 const FANTASY_POINTS_URL = "https://api.codetabs.com/v1/proxy/?quest=https://fantasy.iplt20.com/classic/api/feed/gamedayplayers?tourgamedayId=";
 
 
-export async function fetchLatestPoints(): Promise<FantasyPointObject[]> {
+export async function fetchLatestPoints(): Promise<FantasyPlayers> {
     const start = parseInt(localStorage.getItem("tourgamedayId") ?? "38");
     const points = await fetchPoints(start, []);
-    return points;
+
+    const players: FantasyPlayers = {};
+    for (const p of points) {
+        players[p.Id] = p; // I couldn't figure out how to do it with .map() :-\
+    }
+
+    return players;
 }
 
-async function fetchPoints(tourgamedayId: number, previous: FantasyPointObject[]): Promise<FantasyPointObject[]> {
+async function fetchPoints(tourgamedayId: number, previous: FantasyPlayerObject[]): Promise<FantasyPlayerObject[]> {
     const points = await fetchPointsInner(tourgamedayId);
     if (points) {
         localStorage.setItem("tourgamedayId", tourgamedayId.toString());
@@ -46,9 +52,9 @@ async function fetchPoints(tourgamedayId: number, previous: FantasyPointObject[]
     }
 }
 
-async function fetchPointsInner(tourgamedayId: number): Promise<FantasyPointObject[]> {
+async function fetchPointsInner(tourgamedayId: number): Promise<FantasyPlayerObject[]> {
     const res = await fetch(FANTASY_POINTS_URL + tourgamedayId);
     const json = await res.json();
-    const points: FantasyPointObject[] = json.Data.Value.Players;
+    const points: FantasyPlayerObject[] = json.Data.Value.Players;
     return points;
 }

@@ -9,5 +9,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Leaderboard: typeof import('./src/components/Leaderboard.vue')['default']
+    TeamBreakdown: typeof import('./src/components/TeamBreakdown.vue')['default']
   }
 }

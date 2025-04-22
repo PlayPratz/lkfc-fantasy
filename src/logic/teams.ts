@@ -1,10 +1,13 @@
-import type { FantasyPointObject } from "./fantasy-points";
+import type { FantasyPlayerObject, FantasyPlayers } from "./fantasy-player";
 
 export interface Team {
-    name: string
+    name: string;
     players: number[];
 }
 
+export interface TeamWithPoints extends Team {
+    points: number;
+}
 
 const ARJUN: Team = {
     name: "ARJUN",
@@ -129,6 +132,7 @@ const NISHANT: Team = {
         67516,
         100564,
         71366,
+        120157
     ]
 }
 
@@ -150,7 +154,7 @@ const JUGAL: Team = {
         12047,
         64440,
         63961,
-    ]
+    ],
 }
 
 const ADVAY: Team = {
@@ -217,17 +221,29 @@ const SAAHIL: Team = {
 }
 
 
-export function calculatePointsForTeam(team: Team, points: FantasyPointObject[]): number {
+export function calculatePointsForTeam(team: Team, points: FantasyPlayers): number {
 
-    console.log(`Team: ${team.name}; Players: ${team.players.length}`);
-    const totalPoints = points
-        .filter((value) => team.players.includes(value.Id))
-        .map((value) => value.OverallPoints)
-        .sort((a, b) => a - b)
-        .slice(4)
-        .reduce((sum, value) => sum + value, 0);
+    let penalty = 0;
+    const players = getPlayersForTeam(team, points);
+    const overseas_players = players.filter((p) => p.IS_FP === "1");
 
-    return totalPoints
+    if (overseas_players.length > 7) {
+        console.log(`Penalty applicable for ${team.name}`)
+        penalty = Math.min(...overseas_players.map((p) => p.OverallPoints));
+    }
+
+    const totalPoints =
+        players
+            .map((value) => value.OverallPoints)
+            .sort((a, b) => b - a) // Sort descending
+            .slice(0, 11) // Take top 11
+            .reduce((sum, value) => sum + value, 0);
+
+    return totalPoints - penalty;
+}
+
+export function getPlayersForTeam(team: Team, points: FantasyPlayers): FantasyPlayerObject[] {
+    return Object.values(points).filter((value) => team.players.includes(value.Id));
 }
 
 // export const TEAMS = {
