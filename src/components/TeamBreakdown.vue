@@ -11,11 +11,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="i in teamPoint.players.length">
-                    <td>{{ i }}</td>
-                    <td>{{ getPlayer(i).Name }} {{ getOverseasIndicator(i) }}</td>
-                    <td>{{ getPlayer(i).OverallPoints }} {{ getStatus(i) }}</td>
-                    <td>{{ getPlayer(i).TeamShortName }}</td>
+                <tr v-for="p in players">
+                    <td>{{ p.rank ? p.rank : '+'}}</td>
+                    <td>{{ p.player.Name }} {{ getOverseasIndicator(p.player) }}</td>
+                    <td>{{ p.player.OverallPoints }} {{ getPointIndicator(p.player) }}</td>
+                    <td>{{ p.player.TeamShortName }}</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import type { FantasyPlayerObject, FantasyPlayers } from '@/logic/fantasy-player';
-import type { TeamWithPoints } from '@/logic/teams';
+import { Replacements, type TeamWithPoints } from '@/logic/teams';
 
 
 const p = defineProps<{
@@ -46,12 +46,24 @@ const p = defineProps<{
 const fantasyPlayers = p.props.fantasyPlayers;
 const teamPoint = p.props.teamPoint;
 
+const players: {
+    rank: number,
+    player: FantasyPlayerObject,
+}[] = [];
 
-function getPlayer(index: number): FantasyPlayerObject {
-    // I have no idea why the loop is 1-indexed
-    return fantasyPlayers[teamPoint.players[index - 1]];
+for (let i = 0; i < teamPoint.players.length; i++) {
+    let pid = teamPoint.players[i];
+    const p = fantasyPlayers[pid];
+    players.push({ rank: i + 1, player: p });
+
+    while (Replacements[pid]) {
+        players.push({
+            rank: 0,
+            player: fantasyPlayers[Replacements[pid]]
+        });
+        pid = Replacements[pid];
+    }
 }
-
 
 const descPoints = teamPoint.players
     .map((p) => fantasyPlayers[p].OverallPoints)
@@ -60,25 +72,21 @@ const descPoints = teamPoint.players
 const threshold = descPoints[11];
 const highest = descPoints[0];
 
-function getOverseasIndicator(index: number): string {
-    if (getPlayer(index).IS_FP === '1') {
-        return '✈️';
-    }
-    return '';
-}
-
-
-function getStatus(index: number): string {
-    const player = getPlayer(index);
-    if (player.OverallPoints == highest) {
+function getPointIndicator(p: FantasyPlayerObject): string {
+    if (p.OverallPoints == highest) {
         return '🥇';
-    } else if (player.OverallPoints <= threshold) {
+    } else if (p.OverallPoints <= threshold) {
         return '🔻';
     }
 
     return '';
 }
 
-
+function getOverseasIndicator(p: FantasyPlayerObject): string {
+    if (p.IS_FP === '1') {
+        return '✈️';
+    }
+    return '';
+}
 
 </script>

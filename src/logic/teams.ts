@@ -132,7 +132,6 @@ const NISHANT: Team = {
         67516,
         100564,
         71366,
-        120157
     ]
 }
 
@@ -220,6 +219,9 @@ const SAAHIL: Team = {
     ]
 }
 
+export const Replacements: Record<number, number> = {
+    66584: 120157, // Ruturaj Gaikwad: Ayush Mhatre
+};
 
 export function calculatePointsForTeam(team: Team, points: FantasyPlayers): number {
 
@@ -234,12 +236,19 @@ export function calculatePointsForTeam(team: Team, points: FantasyPlayers): numb
 
     const totalPoints =
         players
-            .map((value) => value.OverallPoints)
+            .map((p) => calculatePointsForPlayer(p.Id, points))
             .sort((a, b) => b - a) // Sort descending
             .slice(0, 11) // Take top 11
             .reduce((sum, value) => sum + value, 0);
 
     return totalPoints - penalty;
+}
+
+function calculatePointsForPlayer(playerId: number | undefined, points: FantasyPlayers): number {
+    if (!playerId) {
+        return 0;
+    }
+    return points[playerId].OverallPoints + calculatePointsForPlayer(Replacements[playerId], points);
 }
 
 export function getPlayersForTeam(team: Team, points: FantasyPlayers): FantasyPlayerObject[] {
