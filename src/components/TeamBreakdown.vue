@@ -1,28 +1,23 @@
 <template>
-    <div class="my-10 mx-4">
+    <div class="my-10 mx-1" :id="teamPoint.name.toLowerCase()">
         <h3 class="text-center">{{ teamPoint.name }}</h3>
         <v-table class="my-4">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th></th>
                     <th>Player</th>
                     <th>Points</th>
-                    <th></th>
-                    <th>IPL Team</th>
+                    <th>Team</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="i in teamPoint.players.length">
                     <td>{{ i }}</td>
-                    <td>{{ getPlayer(i).IS_FP === '1' ? '✈️' : '' }}</td>
-                    <td>{{ getPlayer(i).Name }}</td>
-                    <td>{{ getPlayer(i).OverallPoints }}</td>
-                    <td>{{ getStatus(i) }}</td>
+                    <td>{{ getPlayer(i).Name }} {{ getOverseasIndicator(i) }}</td>
+                    <td>{{ getPlayer(i).OverallPoints }} {{ getStatus(i) }}</td>
                     <td>{{ getPlayer(i).TeamShortName }}</td>
                 </tr>
                 <tr>
-                    <td></td>
                     <td></td>
                     <td><b>TOTAL</b></td>
                     <td><b>{{ teamPoint.points }}</b></td>
@@ -65,6 +60,13 @@ const descPoints = teamPoint.players
 const threshold = descPoints[11];
 const highest = descPoints[0];
 
+function getOverseasIndicator(index: number): string {
+    if (getPlayer(index).IS_FP === '1') {
+        return '✈️';
+    }
+    return '';
+}
+
 
 function getStatus(index: number): string {
     const player = getPlayer(index);
@@ -76,5 +78,7 @@ function getStatus(index: number): string {
 
     return '';
 }
+
+
 
 </script>

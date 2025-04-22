@@ -10,7 +10,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/lkfc-fantasy/",
+  base: "/lkfc-fantasy",
   plugins: [
     Vue({
       template: { transformAssetUrls },
