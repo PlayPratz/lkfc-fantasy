@@ -7,7 +7,7 @@
                     <tr class="bg-secondary">
                         <th style="width: 10%;">#</th>
                         <th>Player</th>
-                        <th style="width: 28%;">Points</th>
+                        <th style="width: 30%;">Points</th>
                         <th class="d-none d-sm-table-cell" style="width: 10%;">Price (₹cr)</th>
                         <th class="d-none d-sm-table-cell" style="width: 10%;">Team</th>
                     </tr>
@@ -20,10 +20,15 @@
                                 {{ p.player.TeamShortName }}
                             </div>
                         </td>
-                        <td>{{ p.player.OverallPoints }} {{ getPointIndicator(p.player) }}
-                            <div class="d-sm-none text-secondary">
-                                ₹{{ p.price }} cr {{ getPriceIndicator(p.price) }}
-                            </div>
+                        <td>{{ p.player.OverallPoints }}
+                            <small v-if="p.player.GamedayPoints !== 0" :class="getGrowthClass(p.player.GamedayPoints)">
+                                ({{ getGrowthSign(p.player.GamedayPoints) }}{{ p.player.GamedayPoints }})
+                            </small>
+                            {{ getPointIndicator(p.player) }}
+                            <small class="d-sm-none text-secondary">
+                                <br />
+                                ₹{{ p.price }}cr{{ getPriceIndicator(p.price) }}
+                            </small>
                         </td>
                         <td class="d-none d-sm-table-cell"> {{ p.price ? p.price : '🩹' }} {{
                             getPriceIndicator(p.price) }}
@@ -47,6 +52,7 @@
 <script setup lang="ts">
 import type { FantasyPlayerObject, FantasyPlayers } from '@/logic/fantasy-player';
 import { Replacements, type TeamWithPoints } from '@/logic/teams';
+import { getGrowthClass, getGrowthSign } from '@/styles/styles';
 
 
 const p = defineProps<{

@@ -17,8 +17,8 @@
                     <tr v-for="t in teamRanks">
                         <td>
                             {{ t.rank }}
-                            <small :class="getRankClass(t.rankGrowth)">
-                                ({{ getRankSign(t.rankGrowth) }}{{ t.rankGrowth }})
+                            <small :class="getGrowthClass(t.rankGrowth)">
+                                ({{ getGrowthSign(t.rankGrowth) }}{{ t.rankGrowth }})
                             </small>
 
                         </td>
@@ -30,8 +30,8 @@
                         </td>
                         <td>
                             {{ t.points }}
-                            <small class="text-success">
-                                (+{{ t.growth }})
+                            <small :class="getGrowthClass(t.growth)">
+                                ({{ getGrowthSign(t.growth) }}{{ t.growth }})
                             </small>
                         </td>
                         <td>
@@ -48,6 +48,7 @@
 
 <script setup lang="ts">
 
+import { getGrowthClass, getGrowthSign } from "@/styles/styles";
 import type { TeamWithPoints } from "../logic/teams";
 
 const props = defineProps<{ teampoints: TeamWithPoints[] }>();
@@ -74,18 +75,6 @@ const teamRanks: {
     }));
 
 const gradient = ['#f72047', '#ffd200', '#1feaea'];
-
-function getRankClass(rankGrowth: number): string {
-    if (rankGrowth < 0) return "text-error";
-    if (rankGrowth > 0) return "text-success";
-    return "text-body";
-}
-
-function getRankSign(rankGrowth: number): string {
-    if (rankGrowth < 0) return '';
-    if (rankGrowth > 0) return '+';
-    return '';
-}
 
 function getRanks(numbers: number[]): number[] {
     const sortedCopy = numbers.slice(0)

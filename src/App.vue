@@ -2,6 +2,7 @@
   <v-app>
     <v-app-bar flat density="compact">
       <v-app-bar-title>Leaderboard</v-app-bar-title>
+      <small>Match {{ getLocalMatchCount() }} </small>
       <v-btn @click="toggleTheme">
         <v-icon>mdi-theme-light-dark</v-icon>
       </v-btn>
@@ -39,7 +40,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { fetchLatestPoints, type FantasyPlayers } from './logic/fantasy-player';
+import { fetchLatestPoints, getLocalMatchCount, type FantasyPlayers } from './logic/fantasy-player';
 import { calculatePointsForTeam, calculatePreviousPointsForTeam, TEAMS, type TeamWithPoints } from './logic/teams';
 import Leaderboard from './components/Leaderboard.vue';
 import TeamBreakdown from './components/TeamBreakdown.vue';
@@ -81,5 +82,6 @@ addEventListener("scroll", () => {
 function scrollToTop() {
   scrollTo({ top: 0 });
 }
+
 
 </script>

@@ -80,3 +80,7 @@ async function fetchMatchCount(): Promise<number> {
 
     return matchCount;
 }
+
+export function getLocalMatchCount() {
+    return localStorage.getItem(KEY_TOURGAMEDAYID);
+}
