@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 
-import type { Team, TeamWithPoints } from "../logic/teams";
+import type { TeamWithPoints } from "../logic/teams";
 
 const props = defineProps<{ teampoints: TeamWithPoints[] }>();
 const teamPoints = props.teampoints.sort((a, b) => b.points - a.points);

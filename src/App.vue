@@ -44,10 +44,13 @@ import { calculatePointsForTeam, TEAMS, type TeamWithPoints } from './logic/team
 import Leaderboard from './components/Leaderboard.vue';
 import TeamBreakdown from './components/TeamBreakdown.vue';
 import { useTheme } from 'vuetify';
+import { THEME } from './logic/theme';
 
 const theme = useTheme();
 function toggleTheme() {
   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark';
+
+  THEME.saveTheme(theme.global.current.value.dark ? 1 : 0);
 }
 
 const isLoading = ref(true);

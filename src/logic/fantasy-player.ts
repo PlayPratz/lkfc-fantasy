@@ -29,9 +29,10 @@ export type FantasyPlayers = Record<number, FantasyPlayerObject>;
 
 const FANTASY_POINTS_URL = "https://api.codetabs.com/v1/proxy/?quest=https://fantasy.iplt20.com/classic/api/feed/gamedayplayers?tourgamedayId=";
 
+const KEY_TOURGAMEDAYID = "tourgamedayId";
 
 export async function fetchLatestPoints(): Promise<FantasyPlayers> {
-    const start = parseInt(localStorage.getItem("tourgamedayId") ?? "40");
+    const start = parseInt(localStorage.getItem(KEY_TOURGAMEDAYID) ?? "40");
     const points = await fetchPoints(start, []);
 
     const players: FantasyPlayers = {};
@@ -45,7 +46,7 @@ export async function fetchLatestPoints(): Promise<FantasyPlayers> {
 async function fetchPoints(tourgamedayId: number, previous: FantasyPlayerObject[]): Promise<FantasyPlayerObject[]> {
     const points = await fetchPointsInner(tourgamedayId);
     if (points) {
-        localStorage.setItem("tourgamedayId", tourgamedayId.toString());
+        localStorage.setItem(KEY_TOURGAMEDAYID, tourgamedayId.toString());
         return fetchPoints(tourgamedayId + 1, points);
     } else {
         return previous;
