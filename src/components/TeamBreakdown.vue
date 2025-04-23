@@ -1,46 +1,47 @@
 <template>
     <v-container>
-        <div class="py-3 mx-1" :id="teamPoint.name.toLowerCase()">
-            <h4 class="text-center">{{ teamPoint.name }}</h4>
-            <v-table class="my-4">
-                <thead>
-                    <tr class="bg-secondary">
-                        <th style="width: 10%;">#</th>
-                        <th>Player</th>
-                        <th style="width: 28%;">Points</th>
-                        <th class="d-none d-sm-table-cell" style="width: 10%;">Price (₹cr)</th>
-                        <th class="d-none d-sm-table-cell" style="width: 10%;">Team</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="p in players">
-                        <td>{{ p.index ? p.index : '🔄' }}</td>
-                        <td>{{ p.player.Name }} {{ getOverseasIndicator(p.player) }}
-                            <div class="d-sm-none text-primary">
-                                {{ p.player.TeamShortName }}
-                            </div>
-                        </td>
-                        <td>{{ p.player.OverallPoints }} {{ getPointIndicator(p.player) }}
-                            <div class="d-sm-none text-secondary">
-                                ₹{{ p.price }} cr {{ getPriceIndicator(p.price) }}
-                            </div>
-                        </td>
-                        <td class="d-none d-sm-table-cell"> {{ p.price ? p.price : '🩹' }} {{
-                            getPriceIndicator(p.price) }}
-                        </td>
-                        <td class="d-none d-sm-table-cell">{{ p.player.TeamShortName }}</td>
-                    </tr>
-                    <tr class="bg-primary">
-                        <td></td>
-                        <td><b>TOTAL</b></td>
-                        <td><b>{{ teamPoint.points }}</b></td>
-                        <td class="d-none d-sm-table-cell"></td>
-                        <td class="d-none d-sm-table-cell"></td>
-                    </tr>
-                </tbody>
-            </v-table>
-
-        </div>
+        <v-card class="bg-secondary pt-2">
+            <div :id="teamPoint.name.toLowerCase()">
+                <h4 class="text-center">{{ teamPoint.name }}</h4>
+                <v-table hover>
+                    <thead>
+                        <tr class="bg-secondary">
+                            <th style="width: 10%;">#</th>
+                            <th>Player</th>
+                            <th style="width: 28%;">Points</th>
+                            <th class="d-none d-sm-table-cell" style="width: 10%;">Price (₹cr)</th>
+                            <th class="d-none d-sm-table-cell" style="width: 10%;">Team</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="p in players">
+                            <td>{{ p.index ? p.index : '🔄' }}</td>
+                            <td>{{ p.player.Name }} {{ getOverseasIndicator(p.player) }}
+                                <div class="d-sm-none text-primary">
+                                    {{ p.player.TeamShortName }}
+                                </div>
+                            </td>
+                            <td>{{ p.player.OverallPoints }} {{ getPointIndicator(p.player) }}
+                                <div class="d-sm-none text-secondary">
+                                    ₹{{ p.price }} cr {{ getPriceIndicator(p.price) }}
+                                </div>
+                            </td>
+                            <td class="d-none d-sm-table-cell"> {{ p.price ? p.price : '🩹' }} {{
+                                getPriceIndicator(p.price) }}
+                            </td>
+                            <td class="d-none d-sm-table-cell">{{ p.player.TeamShortName }}</td>
+                        </tr>
+                        <tr class="bg-primary">
+                            <td></td>
+                            <td><b>TOTAL</b></td>
+                            <td><b>{{ teamPoint.points }}</b></td>
+                            <td class="d-none d-sm-table-cell"></td>
+                            <td class="d-none d-sm-table-cell"></td>
+                        </tr>
+                    </tbody>
+                </v-table>
+            </div>
+        </v-card>
     </v-container>
 
 </template>
