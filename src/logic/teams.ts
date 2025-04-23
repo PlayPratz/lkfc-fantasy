@@ -12,28 +12,41 @@ interface AuctionItem {
 
 export interface TeamWithPoints extends Team {
     points: number;
+    previousPoints: number;
 }
 
 
 export function calculatePointsForTeam(team: Team, points: FantasyPlayers): number {
+    return calculatePointsForTeamInner(team, points, (p) => calculatePointsForPlayer(p.Id, points));
+}
 
-    let penalty = 0;
+export function calculatePreviousPointsForTeam(team: Team, points: FantasyPlayers): number {
+    return calculatePointsForTeamInner(team, points, (p) => calculatePointsForPlayer(p.Id, points) - p.GamedayPoints);
+}
+
+function calculatePointsForTeamInner(team: Team, points: FantasyPlayers, calculatePoints: (p: FantasyPlayerObject) => number): number {
     const players = getPlayersForTeam(team, points);
-    const overseas_players = players.filter((p) => p.IS_FP === "1");
-
-    if (overseas_players.length > 7) {
-        console.log(`Penalty applicable for ${team.name}`)
-        penalty = Math.min(...overseas_players.map((p) => p.OverallPoints));
-    }
+    const penalty = calculatePenaltyForTeam(team, players);
 
     const totalPoints =
         players
-            .map((p) => calculatePointsForPlayer(p.Id, points))
+            .map(calculatePoints)
             .sort((a, b) => b - a) // Sort descending
             .slice(0, 11) // Take top 11
             .reduce((sum, value) => sum + value, 0);
 
     return totalPoints - penalty;
+}
+
+function calculatePenaltyForTeam(team: Team, players: FantasyPlayerObject[]): number {
+    const overseas_players = players.filter((p) => p.IS_FP === "1");
+
+    if (overseas_players.length > 7) {
+        console.log(`Penalty applicable for ${team.name}`)
+        return Math.min(...overseas_players.map((p) => p.OverallPoints));
+    }
+
+    return 0;
 }
 
 function calculatePointsForPlayer(playerId: number | undefined, points: FantasyPlayers): number {

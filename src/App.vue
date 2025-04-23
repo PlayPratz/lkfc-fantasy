@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { fetchLatestPoints, type FantasyPlayers } from './logic/fantasy-player';
-import { calculatePointsForTeam, TEAMS, type TeamWithPoints } from './logic/teams';
+import { calculatePointsForTeam, calculatePreviousPointsForTeam, TEAMS, type TeamWithPoints } from './logic/teams';
 import Leaderboard from './components/Leaderboard.vue';
 import TeamBreakdown from './components/TeamBreakdown.vue';
 import { useTheme } from 'vuetify';
@@ -65,8 +65,8 @@ fetchLatestPoints()
       teamPoints.push({
         ...team,
         points: calculatePointsForTeam(team, fp),
+        previousPoints: calculatePreviousPointsForTeam(team, fp)
       })
-
       fantasyPlayers = fp;
     }
 
