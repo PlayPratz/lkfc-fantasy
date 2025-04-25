@@ -2,10 +2,13 @@
   <v-app>
     <v-app-bar flat density="compact">
       <v-app-bar-title>Leaderboard</v-app-bar-title>
-      <small>Match {{ getLocalMatchCount() }} </small>
-      <v-btn @click="toggleTheme">
-        <v-icon>mdi-theme-light-dark</v-icon>
-      </v-btn>
+      <a v-if="!isLoading" :href="getLatestMatchLink()" target="_blank" class="text-secondary">
+        <v-btn class="rounded-pill" variant="outlined">
+          <small>{{ getLatestMatchString() }}</small>
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+      </a>
+      <v-btn @click="toggleTheme" icon="mdi-theme-light-dark" class="ms-2" />
     </v-app-bar>
     <v-main>
       <div v-if="isLoading" class="text-center my-16">
@@ -40,7 +43,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { fetchLatestPoints, getLocalMatchCount, type FantasyPlayers } from './logic/fantasy-player';
+import { fetchLatestPoints, getLatestMatchLink, getLatestMatchNumber, type FantasyPlayers } from './logic/fantasy-player';
 import { calculatePointsForTeam, calculatePreviousPointsForTeam, TEAMS, type TeamWithPoints } from './logic/teams';
 import Leaderboard from './components/Leaderboard.vue';
 import TeamBreakdown from './components/TeamBreakdown.vue';
@@ -83,5 +86,14 @@ function scrollToTop() {
   scrollTo({ top: 0 });
 }
 
-
+function getLatestMatchString() {
+  const matchNumber = getLatestMatchNumber();
+  switch (matchNumber) {
+    case "71": return "Qualifier 1";
+    case "72": return "Eliminator";
+    case "73": return "Qualifier 2";
+    case "74": return "Final";
+    default: return `Match ${matchNumber}`;
+  }
+}
 </script>

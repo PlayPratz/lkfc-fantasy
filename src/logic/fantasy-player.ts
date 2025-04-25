@@ -29,8 +29,6 @@ export type FantasyPlayers = Record<number, FantasyPlayerObject>;
 
 const FANTASY_POINTS_URL = "https://api.codetabs.com/v1/proxy/?quest=https://fantasy.iplt20.com/classic/api/feed/gamedayplayers?tourgamedayId=";
 
-const KEY_TOURGAMEDAYID = "tourgamedayId";
-
 export async function fetchLatestPoints(): Promise<FantasyPlayers> {
     const start = await fetchMatchCount();;
     const points = await fetchPointsInner(start);
@@ -69,18 +67,34 @@ async function fetchPointsInner(tourgamedayId: number): Promise<FantasyPlayerObj
 
 const MATCHES_URL = "https://api.codetabs.com/v1/proxy/?quest=https://ipl-stats-sports-mechanic.s3.ap-south-1.amazonaws.com/ipl/feeds/stats/2025-matchlinks.js";
 
+const KEY_TOURGAMEDAYID = "tourgamedayId";
+const KEY_MATCHSMID = "smId";
+
+interface MatchLinkObject {
+    smId: number;
+    highlights: string;
+    report: string;
+}
+
 async function fetchMatchCount(): Promise<number> {
     const res = await fetch(MATCHES_URL);
     const text = await res.text();
     const jsonString = text.slice(13, -2);
-    const json: Object[] = JSON.parse(jsonString);
-
+    const json: MatchLinkObject[] = JSON.parse(jsonString);
     const matchCount = json.length;
+
     localStorage.setItem(KEY_TOURGAMEDAYID, matchCount.toString());
+    localStorage.setItem(KEY_MATCHSMID, json[matchCount - 1].smId.toString());
 
     return matchCount;
 }
 
-export function getLocalMatchCount() {
+export function getLatestMatchNumber() {
     return localStorage.getItem(KEY_TOURGAMEDAYID);
+}
+
+export function getLatestMatchLink() {
+    const MATCH_CENTER_URL = "https://www.iplt20.com/match/2025/";
+    const smId = localStorage.getItem(KEY_MATCHSMID);
+    return MATCH_CENTER_URL + smId;
 }
