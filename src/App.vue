@@ -38,7 +38,16 @@
         <span>Stats</span>
       </v-btn>
     </v-bottom-navigation> -->
+    <v-footer  height="40">
+      <div class="text-caption">
+        <span class="text-disabled">developed by</span>
+        <span class="text-decoration-none on-surface">
+          Pratik Nerurkar
+        </span>
+      </div>
+    </v-footer>
   </v-app>
+
 </template>
 
 <script setup lang="ts">
