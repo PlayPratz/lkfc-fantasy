@@ -1,7 +1,9 @@
 <template>
     <v-container>
         <v-card class="pt-4">
-            <v-sparkline type="bar" auto-draw smooth :gradient="gradient" gradient-direction="right"
+            <v-sparkline type="bar" auto-draw smooth 
+            line-width="8":gradient="gradient" 
+            gradient-direction="right"
                 :model-value="teamRanks.map((t) => t.points)" :labels="teamRanks.map((t) => t.name)" label-size=5>
             </v-sparkline>
             <v-table class="mt-4" hover>

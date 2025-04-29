@@ -38,7 +38,7 @@
         <span>Stats</span>
       </v-btn>
     </v-bottom-navigation> -->
-    <v-footer  height="40">
+    <v-footer >
       <div class="text-caption">
         <span class="text-disabled">developed by</span>
         <span class="text-decoration-none on-surface">
