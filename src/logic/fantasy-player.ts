@@ -27,7 +27,8 @@ export interface FantasyPlayerObject {
 
 export type FantasyPlayers = Record<number, FantasyPlayerObject>;
 
-const FANTASY_POINTS_URL = "https://api.codetabs.com/v1/proxy/?quest=https://fantasy.iplt20.com/classic/api/feed/gamedayplayers?tourgamedayId=";
+const CORS_PROXY = "https://api.cors.lol/?url=";
+const FANTASY_POINTS_URL = CORS_PROXY + "https://fantasy.iplt20.com/classic/api/feed/gamedayplayers?tourgamedayId=";
 
 export async function fetchLatestPoints(): Promise<FantasyPlayers> {
     const start = await fetchMatchCount();;
@@ -65,7 +66,7 @@ async function fetchPointsInner(tourgamedayId: number): Promise<FantasyPlayerObj
     return points;
 }
 
-const MATCHES_URL = "https://api.codetabs.com/v1/proxy/?quest=https://ipl-stats-sports-mechanic.s3.ap-south-1.amazonaws.com/ipl/feeds/stats/2025-matchlinks.js";
+const MATCHES_URL = CORS_PROXY + "https://ipl-stats-sports-mechanic.s3.ap-south-1.amazonaws.com/ipl/feeds/stats/2025-matchlinks.js";
 
 const KEY_TOURGAMEDAYID = "tourgamedayId";
 const KEY_MATCHSMID = "smId";
