@@ -27,8 +27,9 @@ export interface FantasyPlayerObject {
 
 export type FantasyPlayers = Record<number, FantasyPlayerObject>;
 
-const CORS_PROXY = "https://api.cors.lol/?url=";
-const FANTASY_POINTS_URL = CORS_PROXY + "https://fantasy.iplt20.com/classic/api/feed/gamedayplayers?tourgamedayId=";
+const CORS_PROXY_CORSLOL = "https://api.cors.lol/?url=";
+const CORS_PROXY_CODETABS = "https://api.codetabs.com/v1/proxy/?quest=";
+const FANTASY_POINTS_URL = "https://fantasy.iplt20.com/classic/api/feed/gamedayplayers?tourgamedayId=";
 
 export async function fetchLatestPoints(): Promise<FantasyPlayers> {
     const start = await fetchMatchCount();;
@@ -57,7 +58,7 @@ export async function fetchLatestPoints(): Promise<FantasyPlayers> {
 // }
 
 async function fetchPointsInner(tourgamedayId: number): Promise<FantasyPlayerObject[] | null> {
-    const res = await fetch(FANTASY_POINTS_URL + tourgamedayId);
+    const res = await handleFetchProxy(FANTASY_POINTS_URL + tourgamedayId, 1);
     const json = await res.json();
 
     if (!json.Data) return null;
@@ -66,7 +67,7 @@ async function fetchPointsInner(tourgamedayId: number): Promise<FantasyPlayerObj
     return points;
 }
 
-const MATCHES_URL = CORS_PROXY + "https://ipl-stats-sports-mechanic.s3.ap-south-1.amazonaws.com/ipl/feeds/stats/2025-matchlinks.js";
+const MATCHES_URL = "https://ipl-stats-sports-mechanic.s3.ap-south-1.amazonaws.com/ipl/feeds/stats/2025-matchlinks.js";
 
 const KEY_TOURGAMEDAYID = "tourgamedayId";
 const KEY_MATCHSMID = "smId";
@@ -78,10 +79,12 @@ interface MatchLinkObject {
 }
 
 async function fetchMatchCount(): Promise<number> {
-    const res = await fetch(MATCHES_URL);
+
+    const res = await handleFetchProxy(MATCHES_URL, 1);
     const text = await res.text();
     const jsonString = text.slice(13, -2);
     const json: MatchLinkObject[] = JSON.parse(jsonString);
+    json.pop(); //This was done to accommodate the abandoned match
     const matchCount = json.length;
 
     localStorage.setItem(KEY_TOURGAMEDAYID, matchCount.toString());
@@ -98,4 +101,20 @@ export function getLatestMatchLink() {
     const MATCH_CENTER_URL = "https://www.iplt20.com/match/2025/";
     const smId = localStorage.getItem(KEY_MATCHSMID);
     return MATCH_CENTER_URL + smId;
+}
+
+async function handleFetchProxy(url: string, proxy: number): Promise<Response> {
+    try {
+        const uri = getProxy(proxy) + url;
+        const res = await fetch(uri);
+        return res;
+    }  catch {
+        return handleFetchProxy(url, proxy + 1);
+    }
+}
+
+function getProxy(index: number): string {
+    if(index === 1) return CORS_PROXY_CODETABS;
+    else if (index === 2 ) return CORS_PROXY_CORSLOL;
+    else return "";
 }
