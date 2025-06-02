@@ -14,17 +14,25 @@
                 </thead>
                 <tbody>
                     <tr v-for="p in players">
-                        <td>{{ p.index ? p.index : '🔄' }}</td>
+                        <td>{{ p.index }}</td>
                         <td>{{ p.player.Name }} {{ getOverseasIndicator(p.player) }}
+                            <template v-for="replacement in p.replacements">
+                                <br />
+                                <small>{{ fantasyPlayers[replacement].Name }}</small>
+                            </template>
                             <div class="d-sm-none text-primary">
                                 {{ p.player.TeamShortName }}
                             </div>
                         </td>
-                        <td>{{ p.player.OverallPoints }}
+                        <td>{{ getPoints(p) }}
                             <small v-if="p.player.GamedayPoints !== 0" :class="getGrowthClass(p.player.GamedayPoints)">
                                 ({{ getGrowthSign(p.player.GamedayPoints) }}{{ p.player.GamedayPoints }})
                             </small>
-                            {{ getPointIndicator(p.player) }}
+                            {{ getPointIndicator(p) }}
+                            <template v-for="replacement in p.replacements">
+                                <br />
+                                <small>{{ fantasyPlayers[replacement].OverallPoints }}</small>
+                            </template>
                             <small class="d-sm-none text-secondary">
                                 <br />
                                 ₹{{ p.price }}cr{{ getPriceIndicator(p.price) }}
@@ -51,7 +59,7 @@
 
 <script setup lang="ts">
 import type { FantasyPlayerObject, FantasyPlayers } from '@/logic/fantasy-player';
-import { Replacements, type TeamWithPoints } from '@/logic/teams';
+import { calculatePointsForPlayer, Replacements, type TeamWithPoints } from '@/logic/teams';
 import { getGrowthClass, getGrowthSign } from '@/styles/styles';
 
 
@@ -68,42 +76,47 @@ const p = defineProps<{
 const fantasyPlayers = p.props.fantasyPlayers;
 const teamPoint = p.props.teamPoint;
 
-const players: {
+interface PlayerInTeamBreakdown {
     index: number,
-    price: number,
     player: FantasyPlayerObject,
-}[] = [];
-
-// const playerIds = getPlayerIdsForTeam(teamPoint);
-
-for (let i = 0; i < teamPoint.auction.length; i++) {
-    const auction = teamPoint.auction[i];
-    let pid = auction.playerId;
-    const p = fantasyPlayers[pid];
-    players.push({ index: i + 1, player: p, price: auction.price });
-
-    while (Replacements[pid]) {
-        players.push({
-            index: 0,
-            player: fantasyPlayers[Replacements[pid]],
-            price: 0
-        });
-        pid = Replacements[pid];
-    }
+    points: number,
+    price: number,
+    replacements: number[]
 }
 
-const descPoints =
-    teamPoint.auction
-        .map((a) => fantasyPlayers[a.playerId].OverallPoints)
-        .sort((a, b) => b - a)
+const players: PlayerInTeamBreakdown[] = teamPoint.auction.map((auctionItem, index) => ({
+    index: index + 1,
+    player: fantasyPlayers[auctionItem.playerId],
+    points: calculatePointsForPlayer(auctionItem.playerId, fantasyPlayers),
+    price: auctionItem.price,
+    replacements: getReplacements(auctionItem.playerId),
+}));
 
-const threshold = descPoints[11];
-const highest = descPoints[0];
+// for (let i = 0; i < teamPoint.auction.length; i++) {
+//     const auction = teamPoint.auction[i];
+//     let pid = auction.playerId;
+//     const p = fantasyPlayers[pid];
+//     players.push({ index: i + 1, player: p, price: auction.price });
 
-function getPointIndicator(p: FantasyPlayerObject): string {
-    if (p.OverallPoints == highest) {
+//     while (Replacements[pid]) {
+//         players.push({
+//             index: 0,
+//             player: fantasyPlayers[Replacements[pid]],
+//             price: 0
+//         });
+//         pid = Replacements[pid];
+//     }
+// }
+
+const descending = players.slice().sort((a, b) => b.points - a.points);
+
+const topElevenIds = descending.slice(0, 11).map((p) => p.player.Id);
+const highest = descending[0].points;
+
+function getPointIndicator(p: PlayerInTeamBreakdown): string {
+    if (p.player.OverallPoints == highest) {
         return '🥇';
-    } else if (p.OverallPoints <= threshold) {
+    } else if (!topElevenIds.includes(p.player.Id)) {
         return '🔻';
     }
 
@@ -117,11 +130,31 @@ function getOverseasIndicator(p: FantasyPlayerObject): string {
     return '';
 }
 
-const expensive = teamPoint.auction.map((a) => a.price).reduce((p, c) => p > c ? p : c);
+const mostExpensive = teamPoint.auction.map((a) => a.price).reduce((p, c) => p > c ? p : c);
 
 function getPriceIndicator(price: number): string {
-    if (price === expensive) return '💰';
+    if (price === mostExpensive) return '💰';
     return '';
+}
+
+function getPoints(p: PlayerInTeamBreakdown): number {
+    return calculatePointsForPlayer(p.player.Id, fantasyPlayers);
+}
+
+function getReplacements(playerId: number): number[] {
+    const replacements: number[] = [];
+
+    let rep = Replacements[playerId];
+    while (rep) {
+        replacements.push(rep);
+        rep = Replacements[rep];
+    }
+
+    if(replacements.length > 0) {
+        replacements.unshift(playerId); // Add to start
+    }
+
+    return replacements;
 }
 
 </script>

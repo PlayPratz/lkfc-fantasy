@@ -32,6 +32,7 @@ const CORS_PROXY_CODETABS = "https://api.codetabs.com/v1/proxy/?quest=";
 const FANTASY_POINTS_URL = "https://fantasy.iplt20.com/classic/api/feed/gamedayplayers?tourgamedayId=";
 
 export async function fetchLatestPoints(): Promise<FantasyPlayers> {
+
     const start = await fetchMatchCount();;
     const points = await fetchPointsInner(start);
 
@@ -83,8 +84,9 @@ async function fetchMatchCount(): Promise<number> {
     const res = await handleFetchProxy(MATCHES_URL, 1);
     const text = await res.text();
     const jsonString = text.slice(13, -2);
-    const json: MatchLinkObject[] = JSON.parse(jsonString);
-    json.pop(); //This was done to accommodate the abandoned match
+    const jsonDump: MatchLinkObject[] = JSON.parse(jsonString);
+    const json = jsonDump.filter((x) => x.smId !== 1973); // Abandoned match
+
     const matchCount = json.length;
 
     localStorage.setItem(KEY_TOURGAMEDAYID, matchCount.toString());

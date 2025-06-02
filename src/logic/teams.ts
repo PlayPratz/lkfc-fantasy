@@ -33,7 +33,7 @@ function calculatePointsForTeamInner(team: Team, points: FantasyPlayers, calcula
             .map(calculatePoints)
             .sort((a, b) => b - a) // Sort descending
             .slice(0, 11) // Take top 11
-            .reduce((sum, value) => sum + value, 0);
+            .reduce((sum, value) => sum + value, 0); // Add all values
 
     return totalPoints - penalty;
 }
@@ -49,7 +49,7 @@ function calculatePenaltyForTeam(team: Team, players: FantasyPlayerObject[]): nu
     return 0;
 }
 
-function calculatePointsForPlayer(playerId: number | undefined, points: FantasyPlayers): number {
+export function calculatePointsForPlayer(playerId: number | undefined, points: FantasyPlayers): number {
     if (!playerId) {
         return 0;
     }
@@ -730,7 +730,33 @@ const SAAHIL: Team = {
 }
 
 export const Replacements: Record<number, number> = {
+    // CSK
     66584: 120157, // Ruturaj Gaikwad: Ayush Mhatre
+
+    // RCB
+    67589: 10115, // Devdutt Padikkal: Mayank Agarwal
+
+    // Replacements due to rescheduling
+
+    // PBKS
+    10085: 81813, // Glenn Maxwell: Mitchell Owen
+    63719: 63865, // Lockie Ferguson: Kyle Jamieson
+
+    // RCB
+    85736: 63867, // Jacob Bethell: Tim Seifert
+
+    // MI
+    66927: 19394, // Will Jacks: Jonny Bairstow
+    64941: 65630, // Ryan Rickelton: Richard Gleeson
+
+    // GT
+    9782: 63882, // Jos Buttler: Kusal Mendis
+
+    // LSG
+    90501: 74400, // Mayank Yadav: Will O' Rourke
+
+    // DC
+    70746: 63881, // Jake Fraser-McGurk: Mustafizur Rehman
 };
 
 export const TEAMS = [
